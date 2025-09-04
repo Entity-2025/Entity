@@ -1,9 +1,9 @@
 {
 	"$schema": "https://openapi.vercel.sh/vercel.json",
-	"rewrites": [
+	"crons": [
 		{
-			"source": "/api/:path*",
-			"destination": "https://api.entitygate.com/api/:path*"
+			"path": "/api/shortlinks/check/auto",
+			"schedule": "0 0 * * *"
 		}
 	]
 }
