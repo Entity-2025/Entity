@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import EntityButtonLoading from "@/components/loading/entityButtonLoading";
 
 export default function Home() {
     return (
@@ -7,19 +7,8 @@ export default function Home() {
             <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
                 <div className="flex flex-col sm:flex-row items-center sm:items-end">
                     <Link href="/login">
-                        <Image
-                            style={{ width: 200, height: 200 }}
-                            className="invert dark:invert-0 animate-pulse"
-                            src="/entity.svg"
-                            alt="Entity logo"
-                            width={180}
-                            height={38}
-                            priority
-                        />
+                        <EntityButtonLoading className="invert-0 w-22 h-22 animate-pulse" />
                     </Link>
-
-                </div>
-                <div className="flex gap-4 items-center flex-col sm:flex-row">
                 </div>
             </main>
         </div>

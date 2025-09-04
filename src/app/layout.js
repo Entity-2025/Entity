@@ -2,6 +2,7 @@ import { Assistant } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/entity-theme";
 import { Toaster } from "sonner";
+import Script from "next/script";
 
 const assistant = Assistant({
     variable: "--font-assistant",
@@ -69,10 +70,15 @@ export default function RootLayout({ children }) {
             >
                 <ThemeProvider
                     attribute="class"
-                    defaultTheme="system"
+                    defaultTheme="light"
                     enableSystem
                 >
                     {children}
+                    <Script
+                        src="https://app.midtrans.com/snap/snap.js"
+                        data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
+                        strategy="afterInteractive"
+                    />
                     <Toaster richColors position="top-right" />
                 </ThemeProvider>
             </body>

@@ -42,7 +42,7 @@ import {
 	ApiKeySkeleton,
 	UsernameSkeleton,
 } from "@/components/loading/entitySkeleton";
-import EntityButtonLoading from "../loading/entityButtonLoading";
+import EntityButtonLoading from "@/components/loading/entityButtonLoading";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -125,7 +125,7 @@ export function NavUser({ user }) {
 					icon: null,
 					loading: (
 						<div className="flex gap-2">
-							<EntityButtonLoading className="invert-0 dark:invert w-5 h-5" />
+							<EntityButtonLoading className="invert-0 w-5 h-5" />
 							<span>Upgrading Account...</span>
 						</div>
 					),
@@ -283,8 +283,7 @@ export function NavUser({ user }) {
 					<AlertDialogHeader>
 						<AlertDialogTitle>Your Billing Info</AlertDialogTitle>
 						<AlertDialogDescription>
-							You can see your current plan and upgrade your plan here (Dummy
-							flow – no payment integration yet)
+							You can see your current plan and upgrade your from here.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 
@@ -311,7 +310,7 @@ export function NavUser({ user }) {
 							<p className="flex text-sm mt-1 gap-2">
 								Expires in :{" "}
 								{countdown || (
-									<EntityButtonLoading className="invert dark:invert-0 w-5 h-5" />
+									<EntityButtonLoading className="invert-0 w-5 h-5" />
 								)}
 							</p>
 						)}
@@ -319,13 +318,16 @@ export function NavUser({ user }) {
 
 					<Button
 						variant={"default"}
-						onClick={() => handleUpgrade("pro")}
+						onClick={() => {
+							router.push("/dashboard?tab=subscriptions");
+							setOpenBillingDialog(false);
+						}}
 						className={"flex items-center justify-center"}
 					>
 						{loading ? (
-							<EntityButtonLoading className="invert-0 dark:invert w-5 h-5" />
+							<EntityButtonLoading className="invert-0 w-5 h-5" />
 						) : (
-							<span>Upgrade to Pro (7 days)</span>
+							<span>UPGRADE PLAN</span>
 						)}
 					</Button>
 
@@ -396,10 +398,8 @@ export function NavUser({ user }) {
 								className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 							>
 								<div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-									<EntityAvatar
-										src={"/entity.svg"}
-										alt={entity?.username || process.env.NEXT_PUBLIC_ORG}
-										className="invert dark:invert-0 cursor-pointer hover:p-1 transition-all duration-200"
+									<EntityButtonLoading
+										className={"invert dark:invert-0 w-22 h-22 animate-none"}
 									/>
 								</div>
 								<div className="grid flex-1 text-left text-sm leading-tight">
@@ -425,7 +425,7 @@ export function NavUser({ user }) {
 											entity?.subscriptionType.slice(1).toLowerCase()
 										) : (
 											<EntityButtonLoading
-												className={"invert dark:invert-0 w-4 h-4 mt-1"}
+												className={"invert-0 w-4 h-4 mt-1"}
 											/>
 										)}
 									</span>

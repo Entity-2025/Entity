@@ -18,6 +18,7 @@ import CoreDashboard from "@/contents/tab/dashboardCore";
 import { AnimatePresence, motion } from "motion/react";
 import EntityLoading from "@/components/loading/entityLoading";
 import useCountdown from "@/hooks/useCountdown";
+import SubscriptionTab from "@/contents/tab/subscriptionTab";
 
 export default function DashboardPageContents() {
 	const [expiresAt, setExpiresAt] = useState(null);
@@ -58,6 +59,8 @@ export default function DashboardPageContents() {
 			return <WhitelistedIpsTab user={entity.username} />;
 		} else if (tab === "blacklisted_ips") {
 			return <BlacklistedIpsTab user={entity.username} />;
+		} else if (tab === "subscriptions") {
+			return <SubscriptionTab />;
 		} else if (tab === "core") {
 			return <CoreDashboard />;
 		} else {

@@ -58,7 +58,7 @@ function ApiKeySkeleton() {
 function UsernameSkeleton() {
 	return (
 		<>
-			<Skeleton className="h-4 w-48 sm:w-38 rounded-sm" />
+			<Skeleton className="h-4 w-48 sm:w-38 rounded-sm bg-neutral-300 dark:bg-accent" />
 		</>
 	);
 }

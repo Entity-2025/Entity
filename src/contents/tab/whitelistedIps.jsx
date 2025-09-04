@@ -147,7 +147,7 @@ export default function WhitelistedIpsTab({ user }) {
 								<SelectTrigger>
 									{loading ? (
 										<div className="flex items-center justify-center mx-auto">
-											<EntityButtonLoading className="invert dark:invert-0 w-5 h-5" />
+											<EntityButtonLoading className="invert-0 w-5 h-5" />
 										</div>
 									) : (
 										<SelectValue placeholder="Choose a shortlink" />
@@ -202,7 +202,7 @@ export default function WhitelistedIpsTab({ user }) {
 									className="w-full max-w-xs"
 								>
 									{saving || loading ? (
-										<EntityButtonLoading className="invert-0 dark:invert w-5 h-5" />
+										<EntityButtonLoading className="invert-0 w-5 h-5" />
 									) : (
 										"ADD"
 									)}
@@ -215,7 +215,7 @@ export default function WhitelistedIpsTab({ user }) {
 							<div className="flex flex-col gap-2 max-h-[250px] overflow-y-auto pr-1">
 								{loading ? (
 									<div className="flex px-5">
-										<EntityButtonLoading className="invert dark:invert-0 w-5 h-5" />
+										<EntityButtonLoading className="invert-0 w-5 h-5" />
 									</div>
 								) : whitelist.length === 0 ? (
 									<p className="text-sm text-red-700">NO WHITELISTED IPs YET</p>
@@ -236,7 +236,7 @@ export default function WhitelistedIpsTab({ user }) {
 															disabled={saving}
 														>
 															{saving ? (
-																<EntityButtonLoading className="invert dark:invert-0 w-5 h-5" />
+																<EntityButtonLoading className="invert-0 w-5 h-5" />
 															) : (
 																<TrashIcon className="w-4 h-4 text-red-600" />
 															)}

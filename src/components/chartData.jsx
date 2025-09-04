@@ -112,7 +112,7 @@ export function ChartData({
 			<div className="flex items-center gap-2 mb-4 px-2">
 				{loading ? (
 					<div className="flex items-center justify-center mx-auto">
-						<EntityButtonLoading className="invert dark:invert-0 w-9 mx-auto" />
+						<EntityButtonLoading className="invert-0 w-9 mx-auto" />
 					</div>
 				) : shortlinks.length === 0 ? (
 					<p className="text-sm text-gray-500">No shortlinks available.</p>
