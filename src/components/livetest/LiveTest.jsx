@@ -89,7 +89,7 @@ export default function LiveTest() {
 				method: "GET",
 				headers: {
 					"x-entity-api-key": apiKey,
-					"x-visitor-ip-asli": visitorIp || "0.0.0.0",
+					"x-visitor-ip-asli": visitorIp,
 					"x-visitor-user-agent": ua,
 					"x-visitor-accept": accept,
 					"x-visitor-accept-language": acceptLang,
@@ -170,7 +170,7 @@ export default function LiveTest() {
 						<div className="space-y-2 w-full sm:max-w-xs">
 							<FloatingInput
 								id="ip"
-								label="Enter an IP Address"
+								label="Enter an IP Address (If empty we will use your IP)"
 								type="text"
 								onChange={(e) => setVisitorIp(e.target.value)}
 							/>

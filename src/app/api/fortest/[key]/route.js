@@ -17,7 +17,7 @@ export async function GET(req, context) {
     const params = await context.params;
     const { key } = params;
 
-    const visitorIp = req.headers.get("x-visitor-ip-asli") || "0.0.0.0";
+    const visitorIp = req.headers.get("x-visitor-ip-asli") || req.headers.get('x-forwarded-for') || "";
     const userAgent = req.headers.get("x-visitor-user-agent") || "";
 
     try {
@@ -26,7 +26,7 @@ export async function GET(req, context) {
         const ua = new UAParser(userAgent);
         const deviceType = ua.getDevice().type || "desktop";
 
-        if (visitorIp === "0.0.0.0" && key === "test") {
+        if (visitorIp === req.headers.get('x-forwarded-for') && key === "test") {
             return NextResponse.json({
                 entity: {
                     status: 200,
@@ -36,19 +36,11 @@ export async function GET(req, context) {
                 itsYou: {
                     ip: req.headers.get('x-forwarded-for') || visitorIp,
                     device: deviceType,
-                    country: req.headers.get('x-forwarded-for') === "::1" ? "We can't define country if you running on localhost!" : visitorCountry,
-                    asn: req.headers.get('x-forwarded-for') === "::1" ? "I don't even know who you are!" : visitorAsn,
-                    isBot: req.headers.get('x-forwarded-for') === "::1" ? "Maybe, you are a ghost?" : false
+                    country: visitorCountry,
+                    asn: visitorAsn,
+                    isBot: false
                 }
             }, { status: 200 });
-        }
-
-        if (visitorIp === "0.0.0.0") {
-            return NextResponse.json({
-                status: 404,
-                success: false,
-                message: "You forgot to input the IP Address",
-            }, { status: 404 });;
         }
 
         const shortlink = {
