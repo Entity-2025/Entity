@@ -5,7 +5,7 @@ It blocks bots, scrapers, fake clicks, and fraudulent traffic in **real time**, 
 
 ---
 
-## 📑 Contents
+## Contents
 
 - [Overview](#overview)
 - [API Endpoints](#api-endpoints)
@@ -19,7 +19,7 @@ It blocks bots, scrapers, fake clicks, and fraudulent traffic in **real time**, 
 
 ---
 
-## 📖 Overview
+## Overview
 
 Entity Antibot evaluates every request using multiple validation layers:
 
@@ -35,7 +35,7 @@ If a request fails validation, the API returns a **block response** with a reaso
 
 ---
 
-## 🌐 API Endpoints
+## API Endpoints
 
 ### 1. Validate Request
 
@@ -62,7 +62,7 @@ GET https://api.entitygate.com/api/fortest/[shortlinkkey]
 
 ---
 
-## 📨 Request Headers
+## Request Headers
 
 Entity expects enriched visitor headers (recommended when used as middleware):
 
@@ -78,7 +78,7 @@ Entity expects enriched visitor headers (recommended when used as middleware):
 
 ---
 
-## 📤 Response Format
+## Response Format
 
 ### Success Response (Allowed)
 
@@ -119,7 +119,7 @@ Entity expects enriched visitor headers (recommended when used as middleware):
 
 ---
 
-## ❌ Block Reasons
+## Block Reasons
 
 | Code              | Description                          |
 | ----------------- | ------------------------------------ |
@@ -133,7 +133,7 @@ Entity expects enriched visitor headers (recommended when used as middleware):
 
 ---
 
-## 📌 Example Requests
+## Example Requests
 
 ### Using curl
 
@@ -159,7 +159,7 @@ curl "https://entitygate.com/api/fortest/entity" ^
 
 ---
 
-## 🧪 Testing & Debugging
+## Testing & Debugging
 
 - Use staging endpoints before production deployment.
 - Enable verbose logging to capture block reasons.
@@ -168,7 +168,7 @@ curl "https://entitygate.com/api/fortest/entity" ^
 
 ---
 
-## 🔒 Security Best Practices
+## Security Best Practices
 
 - Keep CIDR & bot lists updated regularly.
 - Rotate API keys frequently.
@@ -177,7 +177,7 @@ curl "https://entitygate.com/api/fortest/entity" ^
 
 ---
 
-## 📞 Support
+## Support
 
 For enterprise support, contact **Entity Security Team**:
 
