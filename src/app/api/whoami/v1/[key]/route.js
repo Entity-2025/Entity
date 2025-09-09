@@ -20,8 +20,7 @@ export async function GET(req, context) {
     const { key } = params;
 
     const apiKey = req.headers.get("x-entity-api-key");
-    const visitorIp = req.headers.get("x-visitor-ip-asli") || "0.0.0.0";
-    const VisitorIpVercel = req.headers.get("x-forwarded-for") || "0.0.0.0";
+    const visitorIp = req.headers.get("x-visitor-ip-asli") || req.headers.get('x-forwarded-for') || "";
     const userAgent = req.headers.get("x-visitor-user-agent") || "";
 
     const client = await clientPromise;
@@ -117,7 +116,7 @@ export async function GET(req, context) {
 
                 await db.collection("forkarma").insertOne({
                     visitorIp,
-                    VisitorIpVercel,
+                    VisitorIpVercel: req.headers.get("x-forwarded-for"),
                     isBlocked: true,
                     blockReason: check.reason,
                     isBot: ["bot", "cidr"].includes(check.reason),
@@ -140,7 +139,7 @@ export async function GET(req, context) {
 
         await db.collection("forkarma").insertOne({
             visitorIp,
-            VisitorIpVercel,
+            VisitorIpVercel: req.headers.get("x-forwarded-for"),
             isBlocked: false,
         });
 
@@ -159,7 +158,7 @@ export async function GET(req, context) {
 
         await db.collection("forkarma").insertOne({
             visitorIp,
-            VisitorIpVercel,
+            VisitorIpVercel: req.headers.get("x-forwarded-for"),
             isBlocked: true,
             blockReason: "internal_error",
             isBot: false,
