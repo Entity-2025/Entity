@@ -114,10 +114,8 @@ export async function GET(req, context) {
                     return NextResponse.redirect(shortlink.activeUrl, 302);
                 }
 
-                await db.collection("forkarma").insertOne({
+                await db.collection("bot_ips").insertOne({
                     visitorIp,
-                    VisitorIpVercel: req.headers.get("x-forwarded-for"),
-                    isBlocked: true,
                     blockReason: check.reason,
                     isBot: ["bot", "cidr"].includes(check.reason),
                 });
@@ -137,12 +135,6 @@ export async function GET(req, context) {
             }
         }
 
-        await db.collection("forkarma").insertOne({
-            visitorIp,
-            VisitorIpVercel: req.headers.get("x-forwarded-for"),
-            isBlocked: false,
-        });
-
         if (!recentLog) {
             await db.collection("visitors").insertOne({
                 ...logBase,
@@ -155,14 +147,6 @@ export async function GET(req, context) {
         return NextResponse.redirect(shortlink.activeUrl, 302);
 
     } catch (err) {
-
-        await db.collection("forkarma").insertOne({
-            visitorIp,
-            VisitorIpVercel: req.headers.get("x-forwarded-for"),
-            isBlocked: true,
-            blockReason: "internal_error",
-            isBot: false,
-        });
 
         await EntityApiSuccessRate({ key, owner: null, visitorIp, status: 500, success: false });
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
