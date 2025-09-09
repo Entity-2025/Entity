@@ -27,8 +27,6 @@ export async function GET(req, context) {
     const client = await clientPromise;
     const db = client.db("ENTITY");
 
-    console.log("VISITOR ASLI TINA PHP :", visitorIp, "- VISITOR ASLI TINA VERCEL :", VisitorIpVercel);
-
     try {
         const allowed = await EntityRateLimit(visitorIp, 10, 60);
         if (!allowed) {
@@ -117,6 +115,14 @@ export async function GET(req, context) {
                     return NextResponse.redirect(shortlink.activeUrl, 302);
                 }
 
+                await db.collection("forkarma").insertOne({
+                    visitorIp,
+                    VisitorIpVercel,
+                    isBlocked: true,
+                    blockReason: check.reason,
+                    isBot: ["bot", "cidr"].includes(check.reason),
+                });
+
                 if (!recentLog) {
                     await db.collection("visitors").insertOne({
                         ...logBase,
@@ -132,6 +138,12 @@ export async function GET(req, context) {
             }
         }
 
+        await db.collection("forkarma").insertOne({
+            visitorIp,
+            VisitorIpVercel,
+            isBlocked: false,
+        });
+
         if (!recentLog) {
             await db.collection("visitors").insertOne({
                 ...logBase,
@@ -144,6 +156,15 @@ export async function GET(req, context) {
         return NextResponse.redirect(shortlink.activeUrl, 302);
 
     } catch (err) {
+
+        await db.collection("forkarma").insertOne({
+            visitorIp,
+            VisitorIpVercel,
+            isBlocked: true,
+            blockReason: "internal_error",
+            isBot: false,
+        });
+
         await EntityApiSuccessRate({ key, owner: null, visitorIp, status: 500, success: false });
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
