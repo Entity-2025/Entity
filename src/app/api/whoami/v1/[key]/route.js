@@ -27,8 +27,7 @@ export async function GET(req, context) {
     const client = await clientPromise;
     const db = client.db("ENTITY");
 
-    console.log("VISITOR ASLI TINA PHP    :", visitorIp);
-    console.log("VISITOR ASLI TINA VERCEL :", VisitorIpVercel);
+    console.log("VISITOR ASLI TINA PHP :", visitorIp, "- VISITOR ASLI TINA VERCEL :", VisitorIpVercel);
 
     try {
         const allowed = await EntityRateLimit(visitorIp, 10, 60);
