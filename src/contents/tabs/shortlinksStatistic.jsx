@@ -257,12 +257,12 @@ export default function ShortlinksStatisticTab({ user, apikey }) {
 							)}
 						</div>
 					</CardHeader>
-					<CardContent className="max-h-72 scroll">
+					<CardContent className="max-h-110 scroll">
 						<div className="space-y-4">
 							{visitors.length === 0 ? (
 								<i className="text-sm">No recent visitors.</i>
 							) : (
-								visitors.slice(0, 10).map((v, idx) => {
+								visitors.slice(0, 9999).map((v, idx) => {
 									let icon, typeLabel;
 
 									if (v.isBot && v.blockReason === "bot") {

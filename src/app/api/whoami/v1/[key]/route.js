@@ -21,10 +21,14 @@ export async function GET(req, context) {
 
     const apiKey = req.headers.get("x-entity-api-key");
     const visitorIp = req.headers.get("x-visitor-ip-asli") || "0.0.0.0";
+    const VisitorIpVercel = req.headers.get("x-forwarded-for") || "0.0.0.0";
     const userAgent = req.headers.get("x-visitor-user-agent") || "";
 
     const client = await clientPromise;
     const db = client.db("ENTITY");
+
+    console.log("VISITOR ASLI TINA PHP    :", visitorIp);
+    console.log("VISITOR ASLI TINA VERCEL :", VisitorIpVercel);
 
     try {
         const allowed = await EntityRateLimit(visitorIp, 10, 60);

@@ -77,7 +77,7 @@ export function ChartData({
 			<CardContent className="px-2">
 				<ChartContainer
 					config={chartConfig}
-					className="aspect-auto h-[350px] w-full"
+					className="aspect-auto h-[440px] w-full"
 				>
 					<BarChart
 						accessibilityLayer
