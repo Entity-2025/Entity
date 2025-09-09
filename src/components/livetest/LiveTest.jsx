@@ -67,11 +67,11 @@ export default function LiveTest() {
 		}
 	}, []);
 
-	const apiEndpoint = "http://localhost:3000/api/fortest/test";
+	const apiEndpoint = "https://entitygate.com/api/fortest/test";
 
 	const endpoint = useMemo(() => {
 		const key = shortKey || "<your-shortlink-key>";
-		return `http://localhost:3000/api/fortest/${key}`;
+		return `https://entitygate.com/api/fortest/${key}`;
 	}, [shortKey]);
 
 	async function testEndpoint() {
