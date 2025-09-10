@@ -229,11 +229,14 @@ export async function EntityBotCheck(shortlink, visitorIp, headers) {
         return EntityBlock(shortlink);
     }
 
-    const suspicious = await EntityUaHeadersCheck(headers);
+    /**
+    NEED TO FIX THIS! 
+    **/
+    // const suspicious = await EntityUaHeadersCheck(headers);
 
-    if (suspicious) {
-        return EntityBlock(shortlink);
-    }
+    // if (suspicious) {
+    //     return EntityBlock(shortlink);
+    // }
 
     try {
         const detective = await entityCallThirdApi(visitorIp, "ipdetective");
