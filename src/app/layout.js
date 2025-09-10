@@ -25,6 +25,9 @@ export const metadata = {
         "Geo Restriction",
         "Device Check",
     ],
+    verification: {
+        google: "bXhma-WIKiwPSnS74kUrcX9NkrtHa4pWi25Jn6OWHzI",
+    },
     authors: [{ name: "Entity Security Team", url: "https://entitygate.com" }],
     creator: "Entity Security",
     publisher: "Entity",
