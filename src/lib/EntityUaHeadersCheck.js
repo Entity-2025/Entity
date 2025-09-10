@@ -60,12 +60,12 @@ export async function EntityValidateAcceptLanguage(header) {
 const BAD_UA_PATTERNS = /(curl|wget|python|java|node|axios|go-http-client|scrapy|phantom|selenium|headless|bot|spider|crawler)/i;
 
 export async function EntityUaHeadersCheck(headers) {
-    const userAgent = headers.get("x-visitor-user-agent") || "";
-    const accept = headers.get("x-visitor-accept") || "";
-    const acceptLang = headers.get("x-visitor-accept-language") || "";
-    const encoding = headers.get("x-visitor-accept-encoding") || "";
-    const secFetch = headers.get("x-visitor-sec-fetch-site") || "";
-    const secChUa = headers.get("x-visitor-sec-ch-ua") || "";
+    const userAgent = headers.get("x-visitor-user-agent") || headers.get("user-agent") || "";
+    const accept = headers.get("x-visitor-accept") || headers.get("accept") || "";
+    const acceptLang = headers.get("x-visitor-accept-language") || headers.get("accept-language") || "";
+    const encoding = headers.get("x-visitor-accept-encoding") || headers.get("accept-encoding") || "";
+    const secFetch = headers.get("x-visitor-sec-fetch-site") || headers.get("sec-fetch-site") || "";
+    const secChUa = headers.get("x-visitor-sec-ch-ua") || headers.get("sec-ch-ua") || "";
 
     const suspiciousReasons = [];
 

@@ -47,7 +47,7 @@ export async function loadList(filename) {
                         .filter(Boolean);
                     listCache.set(filename, parsed);
                 } catch {
-                    // ERROR DIDIEU
+                    // JANG LOG ERROR
                 }
             }
         });
@@ -150,7 +150,6 @@ export function EntityDeviceCheck(shortlink, userAgent) {
     const allowed = shortlink.allowedDevice;
 
     if ((allowed === "mobile" && !isMobile) || (allowed === "desktop" && !isDesktop)) {
-        // return EntityBlock(shortlink, 'Your device is banned from accessing this resource.');
         return EntityBlock(shortlink);
     }
     return null;
@@ -159,7 +158,6 @@ export function EntityDeviceCheck(shortlink, userAgent) {
 /* ---------------- Entity Block Country (KECUALI ANU ALLOWED) ---------------- */
 export function EntityCountry(shortlink, visitorIp, visitorCountry) {
     if (shortlink.allowedCountry && shortlink.allowedCountry !== "all" && shortlink.allowedCountry !== visitorCountry) {
-        // return EntityBlock(shortlink, 'Your country is banned from accessing this resource.');
         return EntityBlock(shortlink);
     }
     return null;
@@ -206,7 +204,7 @@ async function getCidrRouter() {
 
                     cidrRouter = await buildCidrRouter(updated);
                 } catch (err) {
-                    // console.error("[Entity] Failed to reload CIDR list:", err);
+                    // JANG LOG ERROR
                 }
             }
         });
@@ -218,7 +216,6 @@ async function getCidrRouter() {
 export async function EntityCidrCheck(shortlink, visitorIp) {
     const router = await getCidrRouter();
     if (router.route(visitorIp)) {
-        // return EntityBlock(shortlink, 'Your IP is listed in our CIDR blocklist.');
         return EntityBlock(shortlink);
     }
     return null;

@@ -11,7 +11,7 @@ import {
     EntityRateLimit,
     EntityIpWhitelistCheck,
     EntityIpBlacklistCheck
-} from "@/lib/EntityBlockerDummy";
+} from "@/lib/EntityBlockerPublic";
 
 export async function GET(req, context) {
     const params = await context.params;
