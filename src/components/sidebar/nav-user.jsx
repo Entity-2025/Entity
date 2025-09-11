@@ -50,7 +50,16 @@ import EntityButtonLoading from "@/components/ui/entityButtonLoading";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export function NavUser({ user, handleLogout, loading, username }) {
+export function NavUser({
+	user,
+	handleLogout,
+	loading,
+	username,
+	unreadCount,
+	notifications,
+	setOpenNotificationsDialog,
+	openNotificationsDialog,
+}) {
 	const { isMobile } = useSidebar();
 	const [copied, setCopied] = useState(false);
 	const [openAccountManagementDialog, setOpenAccountManagementDialog] =
@@ -58,9 +67,6 @@ export function NavUser({ user, handleLogout, loading, username }) {
 	const [openAccountInfoDialog, setOpenAccountInfoDialog] = useState(false);
 	const [paying, setPaying] = useState(false);
 	const [countdown, setCountdown] = useState("");
-	const [openNotificationsDialog, setOpenNotificationsDialog] = useState(false);
-	const [notifications, setNotifications] = useState([]);
-	const [unreadCount, setUnreadCount] = useState(0);
 	const [entity, setEntity] = useState(null);
 	const router = useRouter();
 	const Goto = (path) => router.push(path);
@@ -244,31 +250,6 @@ export function NavUser({ user, handleLogout, loading, username }) {
 			});
 		} catch {}
 	};
-
-	useEffect(() => {
-		const fetchNotifications = async () => {
-			try {
-				const res = await fetch("/api/users/notifications");
-				if (res.ok) {
-					const data = await res.json();
-					setNotifications(data.notifications || []);
-					setUnreadCount(data.notifications.filter((n) => !n.read).length);
-				}
-			} catch (err) {
-				console.error("Notifications fetch error:", err);
-			}
-		};
-
-		fetchNotifications();
-		if (openNotificationsDialog) fetchNotifications();
-	}, [openNotificationsDialog]);
-
-	useEffect(() => {
-		if (openNotificationsDialog && unreadCount > 0) {
-			setUnreadCount(0);
-			fetch("/api/users/notifications/mark-read", { method: "POST" });
-		}
-	}, [openNotificationsDialog, unreadCount]);
 
 	return (
 		<SidebarMenu>

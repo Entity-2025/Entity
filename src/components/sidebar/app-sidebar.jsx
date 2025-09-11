@@ -14,11 +14,19 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export function AppSidebar(props) {
+export function AppSidebar({
+	notifications,
+	unreadCount,
+	onMarkRead,
+	setUnreadCount,
+	prevUnreadRef,
+	...props
+}) {
 	const [user, setUser] = useState(null);
 	const [entity, setEntity] = useState(null);
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
+	const [openNotificationsDialog, setOpenNotificationsDialog] = useState(false);
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -127,6 +135,14 @@ export function AppSidebar(props) {
 		}
 	};
 
+	useEffect(() => {
+		if (openNotificationsDialog && unreadCount > 0) {
+			fetch("/api/users/notifications/mark-read", { method: "POST" });
+			setUnreadCount(0);
+			prevUnreadRef.current = 0;
+		}
+	}, [openNotificationsDialog, unreadCount]);
+
 	return (
 		<Sidebar collapsible="icon" {...props}>
 			<SidebarHeader className={"bg-card shadow-md"}>
@@ -136,6 +152,10 @@ export function AppSidebar(props) {
 					username={user?.username}
 					handleLogout={handleLogout}
 					loading={loading}
+					openNotificationsDialog={openNotificationsDialog}
+					setOpenNotificationsDialog={setOpenNotificationsDialog}
+					notifications={notifications}
+					unreadCount={unreadCount}
 				/>
 			</SidebarHeader>
 			<SidebarContent className={"bg-card shadow-md"}>

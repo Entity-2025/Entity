@@ -15,8 +15,16 @@ import {
 	DialogTitle,
 	DialogFooter,
 } from "@/components/ui/dialog";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { FloatingInput } from "@/components/ui/floatingInput";
 import Image from "next/image";
+import EntityButtonLoading from "@/components/ui/entityButtonLoading";
 
 export default function EntityDashboard() {
 	const [users, setUsers] = useState([]);
@@ -28,6 +36,10 @@ export default function EntityDashboard() {
 	const [confirmOpen, setConfirmOpen] = useState(false);
 	const [giftingUser, setGiftingUser] = useState(null);
 	const [giftMessage, setGiftMessage] = useState("");
+	const [exportingBotIps, setExportingBotIps] = useState(false);
+	const [deletingBotIps, setDeletingBotIps] = useState(false);
+	const [deletingNotif, setDeletingNotif] = useState(false);
+	const [format, setFormat] = useState("json");
 	const [url, setUrl] = useState("");
 	const [form, setForm] = useState({
 		username: "",
@@ -179,10 +191,50 @@ export default function EntityDashboard() {
 		);
 	};
 
+	const handleExport = async () => {
+		setExportingBotIps(true);
+		try {
+			const res = await fetch("/api/dev-entity/botip/export", {
+				credentials: "include",
+				cache: "no-store",
+			});
+
+			if (!res.ok) throw new Error("Failed to fetch bot_ips");
+
+			const { docs } = await res.json();
+
+			let content;
+			let filename;
+
+			if (format === "txt") {
+				content = docs.map((d) => d.visitorIp).join("\n");
+				filename = "bot_ips.txt";
+			} else {
+				content = JSON.stringify(docs, null, 2);
+				filename = "bot_ips.json";
+			}
+
+			const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = filename;
+			a.click();
+			URL.revokeObjectURL(url);
+
+			toast.success(`Exported ${docs.length} documents as ${filename}`);
+		} catch (err) {
+			console.error(err);
+			toast.error("Failed to export bot_ips");
+		} finally {
+			setExportingBotIps(false);
+		}
+	};
+
 	return (
 		<div className="p-8 bg-neutral-900/10 min-h-screen">
 			<Card className="rounded-2xl border border-gray-200">
-				<CardHeader className="flex flex-row items-center justify-between pb-2">
+				<CardHeader className="flex flex-row items-center justify-between">
 					<div className="flex items-center gap-2">
 						<Image
 							src="/entity.svg"
@@ -192,7 +244,7 @@ export default function EntityDashboard() {
 							className="w-12 h-12"
 						/>
 						<CardTitle className="text-xl font-semibold">
-							{process.env.NEXT_PUBLIC_ORG} USERS
+							{process.env.NEXT_PUBLIC_ORG}
 						</CardTitle>
 					</div>
 
@@ -207,17 +259,146 @@ export default function EntityDashboard() {
 							/>
 						</div>
 						<Button
-							variant="outline"
+							variant="default"
 							onClick={handleLogout}
-							className="flex items-center gap-2"
+							className="flex items-center gap-2 text-red-700 font-semibold"
 						>
-							<LogOut className="h-4 w-4" />
+							<LogOut className="h-4 w-4 text-red-700" />
 							Logout
 						</Button>
 					</div>
 				</CardHeader>
 
-				<CardContent className="pt-6">
+				<CardContent>
+					<div className="pb-10">
+						<h1 className="text-xl font-bold mb-4">Karma Control Panel</h1>
+
+						<div className="grid grid-cols-2 gap-2">
+							<div className="flex justify-between items-center bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+								<div>
+									<p className="font-semibold text-red-800">
+										Delete All Users Notifications
+									</p>
+									<p className="text-sm text-red-600">
+										This action cannot be undone.
+									</p>
+								</div>
+								<Button
+									size="sm"
+									variant="destructive"
+									disabled={deletingNotif}
+									onClick={async () => {
+										setDeletingNotif(true);
+										await toast.promise(
+											(async () => {
+												const res = await fetch(
+													"/api/dev-entity/notifications/delete",
+													{
+														method: "POST",
+														credentials: "include",
+													}
+												);
+												setDeletingNotif(false);
+												if (!res.ok)
+													throw new Error("Failed to delete notifications");
+											})(),
+											{
+												loading: "Deleting notifications...",
+												success: "All notifications deleted successfully!",
+												error: "Failed to delete notifications",
+											}
+										);
+									}}
+									className="font-semibold w-22"
+								>
+									{deletingNotif ? (
+										<EntityButtonLoading className={"w-4 h-4"} />
+									) : (
+										"Delete"
+									)}
+								</Button>
+							</div>
+
+							<div className="flex justify-between items-center bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+								<div>
+									<p className="font-semibold text-red-800">
+										Delete All stored bot IPs in MongoDB
+									</p>
+									<p className="text-sm text-red-600">
+										Removes all IPs from MongoDB. This cannot be undone.
+									</p>
+								</div>
+								<Button
+									size="sm"
+									variant="destructive"
+									disabled={deletingBotIps}
+									onClick={async () => {
+										setDeletingBotIps(true);
+										await toast.promise(
+											(async () => {
+												const res = await fetch(
+													"/api/dev-entity/botip/delete",
+													{
+														method: "POST",
+														credentials: "include",
+													}
+												);
+												setDeletingBotIps(false);
+												if (!res.ok)
+													throw new Error("Failed to delete bot_ips");
+											})(),
+											{
+												loading: "Deleting bot_ips...",
+												success: "All bot IPs deleted successfully!",
+												error: "Failed to delete bot_ips",
+											}
+										);
+									}}
+									className="font-semibold w-22"
+								>
+									{deletingBotIps ? (
+										<EntityButtonLoading className="w-4 h-4" />
+									) : (
+										"Delete"
+									)}
+								</Button>
+							</div>
+
+							<div className="flex justify-between items-center bg-neutral-50 border rounded-xl p-4 shadow-sm">
+								<div>
+									<p className="font-semibold text-gray-800">
+										Export stored bot IPs in MongoDB
+									</p>
+									<p className="text-sm text-gray-500">
+										Choose format and download data.
+									</p>
+								</div>
+								<div className="flex items-center gap-2">
+									<Select value={format} onValueChange={setFormat}>
+										<SelectTrigger className="w-28">
+											<SelectValue placeholder="Format" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="json">JSON</SelectItem>
+											<SelectItem value="txt">TXT</SelectItem>
+										</SelectContent>
+									</Select>
+									<Button
+										disabled={exportingBotIps}
+										onClick={handleExport}
+										className="font-semibold w-22"
+									>
+										{exportingBotIps ? (
+											<EntityButtonLoading className={"w-4 h-4"} />
+										) : (
+											"Export"
+										)}
+									</Button>
+								</div>
+							</div>
+						</div>
+					</div>
+
 					{loading ? (
 						<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 							{Array.from({ length: 6 }).map((_, i) => (
@@ -230,6 +411,7 @@ export default function EntityDashboard() {
 						</p>
 					) : (
 						<div className="grid gap-4">
+							<h1 className="text-xl font-bold">Karma User List</h1>
 							{filtered.map((user) => {
 								const cardColor =
 									user.plan === "pro"
@@ -301,7 +483,7 @@ export default function EntityDashboard() {
 											</div>
 										</div>
 
-										<div className="flex justify-end gap-2 mt-4">
+										<div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
 											<Button
 												size="sm"
 												variant="default"
@@ -309,15 +491,17 @@ export default function EntityDashboard() {
 													setGiftingUser(user);
 													setGiftMessage("");
 												}}
+												className={"font-semibold"}
 											>
-												Gift
+												Gift User
 											</Button>
 											<Button
 												size="sm"
 												variant="default"
 												onClick={() => handleEdit(user)}
+												className={"font-semibold"}
 											>
-												Edit
+												Edit User
 											</Button>
 											<Button
 												size="sm"
@@ -326,37 +510,9 @@ export default function EntityDashboard() {
 													setDeletingUser(user);
 													setConfirmOpen(true);
 												}}
+												className={"font-semibold"}
 											>
-												Delete
-											</Button>
-											<Button
-												variant="destructive"
-												onClick={async () => {
-													await toast.promise(
-														(async () => {
-															const res = await fetch(
-																"/api/dev-entity/notifications/delete",
-																{
-																	method: "POST",
-																	credentials: "include",
-																}
-															);
-
-															if (!res.ok)
-																throw new Error(
-																	"Failed to delete notifications"
-																);
-														})(),
-														{
-															loading: "Deleting notifications...",
-															success:
-																"All notifications deleted successfully!",
-															error: "Failed to delete notifications",
-														}
-													);
-												}}
-											>
-												Delete Notifications
+												Delete User
 											</Button>
 										</div>
 									</Card>

@@ -114,11 +114,13 @@ export async function GET(req, context) {
                     return NextResponse.redirect(shortlink.activeUrl, 302);
                 }
 
-                await db.collection("bot_ips").insertOne({
-                    visitorIp,
-                    blockReason: check.reason,
-                    isBot: ["bot", "cidr"].includes(check.reason),
-                });
+                if (check.reason === "bot") {
+                    await db.collection("bot_ips").insertOne({
+                        visitorIp,
+                        blockReason: check.reason,
+                        isBot: true,
+                    });
+                }
 
                 if (!recentLog) {
                     await db.collection("visitors").insertOne({
