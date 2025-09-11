@@ -10,11 +10,7 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from "recharts";
-import {
-	Activity,
-	MousePointerClick,
-	ShieldCheckIcon,
-} from "lucide-react";
+import { Activity, MousePointerClick, ShieldCheckIcon } from "lucide-react";
 import EntityButtonLoading from "@/components/ui/entityButtonLoading";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
@@ -65,7 +61,7 @@ export default function DashboardCoreTab({ owner }) {
 	useEffect(() => {
 		const fetchSuccessRate = async () => {
 			try {
-				const res = await fetch(`/api/status/succesRate`);
+				const res = await fetch(`/api/status/succesRate?owner=${owner}`);
 				const data = await res.json();
 				if (data.success) {
 					setSuccessRate(data.data.rate);

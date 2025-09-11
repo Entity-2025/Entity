@@ -1,12 +1,22 @@
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req) {
     try {
+        const { searchParams } = new URL(req.url);
+        const owner = searchParams.get("owner");
         const client = await clientPromise;
         const db = client.db("ENTITY");
 
+        if (!owner) {
+            return NextResponse.json(
+                { success: false, error: "Missing owner parameter" },
+                { status: 400 }
+            );
+        }
+
         const result = await db.collection("statusLogs").aggregate([
+            { $match: { owner } },
             {
                 $group: {
                     _id: "$success",
