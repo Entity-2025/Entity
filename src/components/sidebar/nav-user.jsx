@@ -12,6 +12,7 @@ import {
 	Settings2,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useNotificationSound } from "@/hooks/useNotificationSound";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -50,16 +51,7 @@ import EntityButtonLoading from "@/components/ui/entityButtonLoading";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export function NavUser({
-	user,
-	handleLogout,
-	loading,
-	username,
-	unreadCount,
-	notifications,
-	setOpenNotificationsDialog,
-	openNotificationsDialog,
-}) {
+export function NavUser({ user, handleLogout, loading, username }) {
 	const { isMobile } = useSidebar();
 	const [copied, setCopied] = useState(false);
 	const [openAccountManagementDialog, setOpenAccountManagementDialog] =
@@ -67,6 +59,11 @@ export function NavUser({
 	const [openAccountInfoDialog, setOpenAccountInfoDialog] = useState(false);
 	const [paying, setPaying] = useState(false);
 	const [countdown, setCountdown] = useState("");
+	const [openNotificationsDialog, setOpenNotificationsDialog] = useState(false);
+	const [notifications, setNotifications] = useState([]);
+	const [unreadCount, setUnreadCount] = useState(0);
+	const prevUnreadRef = useRef(0);
+	const playNotificationSound = useNotificationSound("/notif.wav");
 	const [entity, setEntity] = useState(null);
 	const router = useRouter();
 	const Goto = (path) => router.push(path);
@@ -250,6 +247,41 @@ export function NavUser({
 			});
 		} catch {}
 	};
+
+	useEffect(() => {
+		if (unreadCount > prevUnreadRef.current) {
+			playNotificationSound();
+		}
+		prevUnreadRef.current = unreadCount;
+	}, [unreadCount, playNotificationSound]);
+
+	let interval;
+
+	useEffect(() => {
+		const fetchNotifications = async () => {
+			try {
+				const res = await fetch("/api/users/notifications");
+				if (res.ok) {
+					const data = await res.json();
+					setNotifications(data.notifications || []);
+					setUnreadCount(data.notifications.filter((n) => !n.read).length);
+				}
+			} catch (err) {
+				console.error("Notifications fetch error:", err);
+			}
+		};
+
+		fetchNotifications();
+		interval = setInterval(fetchNotifications, 5000);
+		return () => clearInterval(interval);
+	}, []);
+
+	useEffect(() => {
+		if (openNotificationsDialog && unreadCount > 0) {
+			setUnreadCount(0);
+			fetch("/api/users/notifications/mark-read", { method: "POST" });
+		}
+	}, [openNotificationsDialog, unreadCount]);
 
 	return (
 		<SidebarMenu>
