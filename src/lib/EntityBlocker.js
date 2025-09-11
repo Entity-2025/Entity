@@ -229,14 +229,14 @@ export async function EntityBotCheck(shortlink, visitorIp, headers) {
         return EntityBlock(shortlink);
     }
 
-    /**
-    NEED TO FIX THIS! 
-    **/
-    // const suspicious = await EntityUaHeadersCheck(headers);
+    const { score, reasons, risk } = await EntityUaHeadersCheck(headers);
 
-    // if (suspicious) {
-    //     return EntityBlock(shortlink);
-    // }
+    const BLOCK_THRESHOLD = 7;
+
+    if (score >= BLOCK_THRESHOLD) {
+        // return EntityBlock(shortlink, `Risk Level: ${risk}, Score: ${score}, Reasons: ${reasons}`);
+        return EntityBlock(shortlink);
+    }
 
     try {
         const detective = await entityCallThirdApi(visitorIp, "ipdetective");

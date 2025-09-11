@@ -59,6 +59,15 @@ export async function EntityValidateAcceptLanguage(header) {
 
 const BAD_UA_PATTERNS = /(curl|wget|python|java|node|axios|go-http-client|scrapy|phantom|selenium|headless|bot|spider|crawler)/i;
 
+const UA_RISK_WEIGHTS = {
+    bad_ua: 6,
+    invalid_accept: 2,
+    invalid_accept_language: 2,
+    missing_sec_ch_ua: 3,
+    missing_sec_fetch: 2,
+    no_encoding: 2
+};
+
 export async function EntityUaHeadersCheck(headers) {
     const userAgent = headers.get("x-visitor-user-agent") || headers.get("user-agent") || "";
     const accept = headers.get("x-visitor-accept") || headers.get("accept") || "";
@@ -67,31 +76,47 @@ export async function EntityUaHeadersCheck(headers) {
     const secFetch = headers.get("x-visitor-sec-fetch-site") || headers.get("sec-fetch-site") || "";
     const secChUa = headers.get("x-visitor-sec-ch-ua") || headers.get("sec-ch-ua") || "";
 
-    const suspiciousReasons = [];
+    let score = 0;
+    const reasons = [];
 
     if (!userAgent || userAgent.length < 10 || BAD_UA_PATTERNS.test(userAgent)) {
-        suspiciousReasons.push("bad_ua");
+        score += UA_RISK_WEIGHTS.bad_ua;
+        reasons.push("bad_ua - suspicious user-agent");
     }
 
     if (!accept.includes("text/html")) {
-        suspiciousReasons.push("invalid_accept");
+        score += UA_RISK_WEIGHTS.invalid_accept;
+        reasons.push(`invalid_accept - Accept header "${accept}" missing "text/html"`);
     }
 
     if (!(await EntityValidateAcceptLanguage(acceptLang))) {
-        suspiciousReasons.push("invalid_accept_language");
+        score += UA_RISK_WEIGHTS.invalid_accept_language;
+        reasons.push(`invalid_accept_language - Accept-Language "${acceptLang}" invalid`);
     }
 
     if (!secChUa && /Chrome|Safari|Firefox/i.test(userAgent)) {
-        suspiciousReasons.push("missing_sec_ch_ua");
+        score += UA_RISK_WEIGHTS.missing_sec_ch_ua;
+        reasons.push("missing_sec_ch_ua - missing sec-ch-ua header for browser");
     }
 
     if (!secFetch && /Chrome|Safari|Firefox/i.test(userAgent)) {
-        suspiciousReasons.push("missing_sec_fetch");
+        score += UA_RISK_WEIGHTS.missing_sec_fetch;
+        reasons.push("missing_sec_fetch - missing sec-fetch-site header for browser");
     }
 
     if (!encoding.includes("gzip") && !encoding.includes("br")) {
-        suspiciousReasons.push("no_encoding");
+        score += UA_RISK_WEIGHTS.no_encoding;
+        reasons.push(`no_encoding - Accept-Encoding "${encoding}" missing gzip/br`);
     }
 
-    return suspiciousReasons.length > 0 ? suspiciousReasons : null;
+    let risk;
+    if (score >= 7) {
+        risk = "high";
+    } else if (score >= 4) {
+        risk = "medium";
+    } else {
+        risk = "low";
+    }
+
+    return { score, reasons, risk };
 }
