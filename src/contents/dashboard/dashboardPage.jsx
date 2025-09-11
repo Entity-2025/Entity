@@ -27,6 +27,7 @@ import React, { useState, useEffect } from "react";
 import ShortlinksStatisticTab from "@/contents/tabs/shortlinksStatistic";
 import IPsManagementTab from "@/contents/tabs/ipsManagement";
 import DashboardCoreTab from "@/contents/tabs/dashboardCore";
+import TutorialTab from "@/contents/tabs/tutorial";
 import Loading from "@/app/loading";
 import LiveTest from "@/components/livetest/LiveTest";
 
@@ -75,6 +76,12 @@ export default function DashboardPageContents() {
 						<LiveTest />
 					</div>
 				);
+			case "tutorial":
+				return (
+					<div className="p-4">
+						<TutorialTab />
+					</div>
+				);
 			case "core":
 				return <DashboardCoreTab owner={entity.username} />;
 			default:
@@ -88,6 +95,7 @@ export default function DashboardPageContents() {
 		shortlinks_statistic: "Shortlinks Statistic",
 		ips_management: "IPs Management",
 		live_tester: "Live Tester",
+		tutorial: "Tutorial",
 		core: "Dashboard",
 	};
 
