@@ -145,7 +145,12 @@ export async function EntityCidrCheck(shortlink, visitorIp) {
 export async function EntityBotCheck(shortlink, visitorIp, headers) {
     const botList = await loadList("entity.bots");
     if (botList.includes(visitorIp)) return EntityBlock(shortlink, "IP LISTED IN ENTITY BOT BLOCKLIST! → (BLOCKED)");
-    const suspicious = await EntityUaHeadersCheck(headers);
-    if (suspicious) return EntityBlock(suspicious);
+    const { score, reasons, risk } = await EntityUaHeadersCheck(headers);
+
+    const BLOCK_THRESHOLD = 7;
+
+    if (score >= BLOCK_THRESHOLD) {
+        return EntityBlock(shortlink, `Risk Level: ${risk}, Score: ${score}, Reasons: ${reasons}`);
+    }
     return null;
 }
