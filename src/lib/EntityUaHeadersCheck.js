@@ -1,14 +1,17 @@
 import fetch from "node-fetch";
+import fs from "fs";
+import path from "path";
 
 let validLanguageSubtags = null;
 
-async function EntityLoadLanguageSubtags() {
+function EntityLoadLanguageSubtags() {
     if (validLanguageSubtags) return validLanguageSubtags;
 
-    const res = await fetch(
-        "https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry"
+    const filePath = path.resolve(
+        process.cwd(),
+        "src/lib/EntityDB/entity.subtag"
     );
-    const text = await res.text();
+    const text = fs.readFileSync(filePath, "utf8");
 
     const lines = text.split("\n");
     const subtags = new Set();

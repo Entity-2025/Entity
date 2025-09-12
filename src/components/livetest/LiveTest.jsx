@@ -35,8 +35,8 @@ import { toast } from "sonner";
 import { usePathname } from "next/navigation";
 
 export default function LiveTest() {
-	const [apiKey, setApiKey] = useState("x");
-	const [shortKey, setShortKey] = useState("x");
+	const [apiKey, setApiKey] = useState("entity");
+	const [shortKey, setShortKey] = useState("entity");
 	const [visitorIp, setVisitorIp] = useState("");
 	const [ua, setUa] = useState("");
 	const [accept, setAccept] = useState(
@@ -67,10 +67,10 @@ export default function LiveTest() {
 		}
 	}, []);
 
-	const apiEndpoint = "https://entitygate.com/api/fortest/test";
+	const apiEndpoint = "https://entitygate.com/api/fortest/entity";
 
 	const endpoint = useMemo(() => {
-		const key = shortKey || "<your-shortlink-key>";
+		const key = shortKey || "entity";
 		return `https://entitygate.com/api/fortest/${key}`;
 	}, [shortKey]);
 

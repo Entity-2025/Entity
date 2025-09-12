@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { UAParser } from "ua-parser-js";
+import clientPromise from "@/lib/mongodb";
 import { getCountry, getAsn } from "@/lib/EntityGeoIp";
 import { entityCallThirdApi } from "@/lib/entityCallThirdApi";
 
@@ -40,6 +41,42 @@ export async function GET(req, context) {
             getCountry(visitorIp),
             getAsn(visitorIp),
         ]);
+
+        const responseObj = {
+            Entity: {
+                visitorIp,
+                visitorIpType: ipwhois.type,
+                visitorDevice: deviceType,
+                visitorCountry: ipwhois.country,
+                visitorCountryCode,
+                location: {
+                    region: ipwhois.region,
+                    city: ipwhois.city,
+                    zip: ipwhois.postal,
+                    capital: ipwhois.capital,
+                    latitude: ipwhois.latitude,
+                    longitude: ipwhois.longitude,
+                    phoneNumberCode: `+${ipwhois.calling_code}`,
+                },
+                connection: {
+                    asn: ipwhois.connection.asn,
+                    isp: ipwhois.connection.isp,
+                },
+                timezone: {
+                    id: ipwhois.timezone.id,
+                    utc: ipwhois.timezone.utc,
+                    time_now: ipwhois.timezone.current_time,
+                },
+            },
+        };
+
+        const client = await clientPromise;
+        const db = client.db("ENTITY");
+        await db.collection("checked_ip").updateOne(
+            { visitorIp },
+            { $setOnInsert: { firstSeen: new Date(), response: responseObj } },
+            { upsert: true }
+        );
 
         const shortlink = {
             shortlinkKey: visitorIp,

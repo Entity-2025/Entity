@@ -9,6 +9,7 @@ import { FloatingInput } from "@/components/ui/floatingInput";
 import { useEffect, useState } from "react";
 import EntityBackupUrlHelperPopover from "@/components/popover/urlBackuHelper";
 import { toast } from "sonner";
+import { EntityCreateShortlink } from "@/components/title/EntityTitle";
 
 export default function CreateShortlinkTab({ user }) {
 	const [loading, setLoading] = useState(false);
@@ -71,6 +72,9 @@ export default function CreateShortlinkTab({ user }) {
 
 	return (
 		<div className={"p-4"}>
+			<div className={"mb-10 -mt-2"}>
+				<EntityCreateShortlink className="w-42 h-5 sm:h-7" />
+			</div>
 			<div className="flex items-center justify-center">
 				<form
 					onSubmit={handleSubmit}

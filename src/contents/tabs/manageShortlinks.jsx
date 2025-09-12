@@ -4,6 +4,7 @@ import EntityButtonLoading from "@/components/ui/entityButtonLoading";
 import EntityManageShortlinksContent from "@/components/ui/entityManageShortlinksContent";
 import { ManageShortlinkSkeleton } from "@/components/ui/entitySkeleton";
 import { useRouter } from "next/navigation";
+import { EntityManageShortlinks } from "@/components/title/EntityTitle";
 
 export default function ManageShortlinksTab({ user }) {
 	const [shortlinks, setShortlinks] = useState([]);
@@ -45,11 +46,9 @@ export default function ManageShortlinksTab({ user }) {
 	const [autoUpdating, setAutoUpdating] = useState(false);
 
 	useEffect(() => {
-		fetchShortlinks();
-
 		if (!user) return;
 
-		const interval = setInterval(() => {
+		const fetchAutoCheck = () => {
 			setAutoUpdating(true);
 
 			fetch("/api/shortlinks/check/auto", {
@@ -59,18 +58,23 @@ export default function ManageShortlinksTab({ user }) {
 			})
 				.then((res) => res.json())
 				.then((data) => {
-					if (data.shortlinks) {
-						setShortlinks(data.shortlinks);
-					}
+					if (data.shortlinks) setShortlinks(data.shortlinks);
 				})
 				.finally(() => setAutoUpdating(false));
-		}, 2 * 60 * 1000);
+		};
+
+		fetchAutoCheck();
+
+		const interval = setInterval(fetchAutoCheck, 2 * 60 * 1000);
 
 		return () => clearInterval(interval);
 	}, [user]);
 
 	return (
 		<div className="p-4">
+			<div className={"mb-10 -mt-2"}>
+				<EntityManageShortlinks className="w-42 h-5 sm:h-7" />
+			</div>
 			{loading ? (
 				<ManageShortlinkSkeleton count={skeletonCount} />
 			) : shortlinks.length === 0 ? (

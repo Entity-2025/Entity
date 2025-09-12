@@ -105,7 +105,7 @@ export function AppSidebar(props) {
 					},
 					{
 						title: "Changelog",
-						url: "#",
+						url: "?tab=changelogs",
 					},
 				],
 			},

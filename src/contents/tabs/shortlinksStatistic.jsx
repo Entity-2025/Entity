@@ -34,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import EntityButtonLoading from "@/components/ui/entityButtonLoading";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EntityStatistic } from "@/components/title/EntityTitle";
 
 export default function ShortlinksStatisticTab({ user, apikey }) {
 	const [activeChart, setActiveChart] = useState("desktop");
@@ -132,7 +133,10 @@ export default function ShortlinksStatisticTab({ user, apikey }) {
 	};
 
 	return (
-		<div className="p-6 grid gap-6 min-h-[70vh]">
+		<div className="p-4 grid gap-6 min-h-[70vh]">
+			<div className={"mb-4 -mt-2"}>
+				<EntityStatistic className="w-42 h-5 sm:h-7" />
+			</div>
 			<div className="w-full max-w-sm bg-background">
 				{loading ? (
 					<div className="">

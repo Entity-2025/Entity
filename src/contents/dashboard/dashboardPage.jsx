@@ -30,6 +30,8 @@ import DashboardCoreTab from "@/contents/tabs/dashboardCore";
 import TutorialTab from "@/contents/tabs/tutorial";
 import Loading from "@/app/loading";
 import LiveTest from "@/components/livetest/LiveTest";
+import { EntityLiveTester } from "@/components/title/EntityTitle";
+import ChangelogsTab from "../tabs/changelogs";
 
 export default function DashboardPageContents() {
 	const searchParams = useSearchParams();
@@ -73,6 +75,9 @@ export default function DashboardPageContents() {
 			case "live_tester":
 				return (
 					<div className="p-4">
+						<div className={"mb-10 -mt-2"}>
+							<EntityLiveTester className="w-42 h-5 sm:h-7" />
+						</div>
 						<LiveTest />
 					</div>
 				);
@@ -82,6 +87,8 @@ export default function DashboardPageContents() {
 						<TutorialTab />
 					</div>
 				);
+			case "changelogs":
+				return <ChangelogsTab />;
 			case "core":
 				return <DashboardCoreTab owner={entity.username} />;
 			default:

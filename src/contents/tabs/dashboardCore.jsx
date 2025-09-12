@@ -14,6 +14,7 @@ import { Activity, MousePointerClick, ShieldCheckIcon } from "lucide-react";
 import EntityButtonLoading from "@/components/ui/entityButtonLoading";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
+import { EntityDashboard } from "@/components/title/EntityTitle";
 
 export default function DashboardCoreTab({ owner }) {
 	const [visitors, setVisitors] = useState([]);
@@ -127,7 +128,10 @@ export default function DashboardCoreTab({ owner }) {
 		.sort((a, b) => b.count - a.count);
 
 	return (
-		<div className="p-6 grid gap-6 min-h-[70vh]">
+		<div className="p-4 grid gap-6 min-h-[70vh]">
+			<div className={"mb-4 -mt-2"}>
+				<EntityDashboard className="w-34 h-5 sm:w-42 sm:h-7" />
+			</div>
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 				<Card className="shadow-md rounded-2xl">
 					<CardHeader className="flex flex-row items-center justify-between pb-2">

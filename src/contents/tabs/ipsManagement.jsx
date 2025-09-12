@@ -19,6 +19,10 @@ import { toast } from "sonner";
 import EntityButtonLoading from "@/components/ui/entityButtonLoading";
 import { TrashIcon } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+	EntityManageBlacklist,
+	EntityManageWhitelist,
+} from "@/components/title/EntityTitle";
 
 export default function IPsManagementTab({ user }) {
 	const [shortlinks, setShortlinks] = useState([]);
@@ -131,6 +135,14 @@ export default function IPsManagementTab({ user }) {
 
 	return (
 		<div className="grid gap-4 p-4">
+			<div className={"mb-6 -mt-2"}>
+				{mode === "blacklist" ? (
+					<EntityManageBlacklist className="w-42 h-5 sm:h-7" />
+				) : (
+					<EntityManageWhitelist className="w-42 h-5 sm:h-7" />
+				)}
+			</div>
+
 			<div className="w-full bg-white dark:bg-neutral-900 shadow-lg rounded-2xl p-6 flex flex-col gap-6">
 				{shortlinks.length === 0 && !loading ? (
 					<div className="text-center text-gray-500 text-sm">
@@ -139,7 +151,11 @@ export default function IPsManagementTab({ user }) {
 				) : (
 					<>
 						<div className="w-full max-w-max">
-							<Tabs value={mode} onValueChange={setMode} className="w-full mb-3">
+							<Tabs
+								value={mode}
+								onValueChange={setMode}
+								className="w-full mb-3"
+							>
 								<TabsList>
 									<TabsTrigger value="blacklist" className={"cursor-pointer"}>
 										Blacklist

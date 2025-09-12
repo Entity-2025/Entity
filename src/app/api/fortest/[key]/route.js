@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { UAParser } from "ua-parser-js";
 import { getCountry, getAsn } from "@/lib/EntityGeoIp";
-
 import {
     EntityCountry,
     EntityDeviceCheck,
@@ -12,33 +11,76 @@ import {
     EntityIpWhitelistCheck,
     EntityIpBlacklistCheck
 } from "@/lib/EntityBlockerPublic";
+import { entityCallThirdApi } from "@/lib/entityCallThirdApi";
 
 export async function GET(req, context) {
-    const params = await context.params;
-    const { key } = params;
+    const { key } = await context.params;
 
-    const visitorIp = req.headers.get("x-visitor-ip-asli") || req.headers.get('x-forwarded-for') || "";
+    const visitorIp = req.headers.get("x-visitor-ip-asli") || req.headers.get("x-forwarded-for") || "::1";
+
     const userAgent = req.headers.get("x-visitor-user-agent") || "";
+    const ua = new UAParser(userAgent);
+    const deviceType = ua.getDevice().type || "desktop";
+
+    let ipwhois = {};
+    try {
+        ipwhois = (await entityCallThirdApi(visitorIp, "ipwhois")) || {};
+    } catch (err) {
+        console.error("ipwhois fetch failed:", err);
+        ipwhois = {};
+    }
+
+    const {
+        type: visitorIpType = null,
+        country: visitorCountry = null,
+        region = null,
+        city = null,
+        postal: zip = null,
+        capital = null,
+        latitude = null,
+        longitude = null,
+        calling_code: phoneNumberCodeRaw = null,
+        connection: connectionRaw = {},
+        timezone: timezoneRaw = {}
+    } = ipwhois;
+
+    const connection = {
+        asn: connectionRaw.asn || null,
+        isp: connectionRaw.isp || null
+    };
+
+    const timezone = {
+        id: timezoneRaw.id || null,
+        utc: timezoneRaw.utc || null,
+        time_now: timezoneRaw.current_time || null
+    };
+
+    const phoneNumberCode = phoneNumberCodeRaw ? `+${phoneNumberCodeRaw}` : null;
+
+    const [visitorCountryCode, visitorAsn] = await Promise.all([
+        getCountry(visitorIp),
+        getAsn(visitorIp)
+    ]);
+
+    if (key !== "entity") {
+        return NextResponse.json({
+            message: "Who the fuck are you?"
+        }, { status: 400 });
+    }
 
     try {
-        let visitorCountry = await getCountry(visitorIp);
-        let visitorAsn = await getAsn(visitorIp);
-        const ua = new UAParser(userAgent);
-        const deviceType = ua.getDevice().type || "desktop";
-
-        if (visitorIp === req.headers.get('x-forwarded-for') && key === "test") {
+        if (visitorIp === req.headers.get("x-forwarded-for") && key === "entity") {
             return NextResponse.json({
-                entity: {
-                    status: 200,
-                    success: true,
-                    message: "Welcome to the ENTITY API test endpoint."
-                },
-                itsYou: {
-                    ip: req.headers.get('x-forwarded-for') || visitorIp,
-                    device: deviceType,
-                    country: visitorCountry,
-                    asn: visitorAsn,
-                    isBot: false
+                Entity: {
+                    info: { success: true, message: "Welcome to Entity!" },
+                    visitorIp,
+                    visitorIpType,
+                    visitorDevice: deviceType,
+                    visitorCountry,
+                    visitorCountryCode,
+                    location: { region, city, zip, capital, latitude, longitude, phoneNumberCode },
+                    connection,
+                    timezone
                 }
             }, { status: 200 });
         }
@@ -47,8 +89,8 @@ export async function GET(req, context) {
             shortlinkKey: key,
             activeUrl: "https://example.com",
             allowedDevice: "all",
-            ipWhitelist: ["172.235.55.24"],
-            ipBlacklist: ["172.235.55.23"],
+            ipWhitelist: [],
+            ipBlacklist: [],
             allowedCountry: "all",
         };
 
@@ -63,7 +105,7 @@ export async function GET(req, context) {
                 visitorCountry,
                 visitorAsn,
                 status: 429,
-                message: "Too Many Requests - Rate limit exceeded",
+                message: "rate_limit"
             }, { status: 429 });
         }
 
@@ -71,53 +113,69 @@ export async function GET(req, context) {
             { fn: () => EntityIpWhitelistCheck(shortlink, visitorIp), reason: "whitelisted_ip", async: false },
             { fn: () => EntityIpBlacklistCheck(shortlink, visitorIp), reason: "ip_blacklist", async: false },
             { fn: () => EntityDeviceCheck(shortlink, userAgent), reason: "device_not_allowed", async: false },
-            { fn: () => EntityCountry(shortlink, visitorIp, visitorCountry), reason: "country_blocked", async: false },
+            { fn: () => EntityCountry(shortlink, visitorIp, visitorCountryCode), reason: "country_blocked", async: false },
             { fn: () => EntityCidrCheck(shortlink, visitorIp), reason: "cidr_blocked", async: true },
             { fn: () => EntityAsnCheck(shortlink, visitorIp, visitorAsn), reason: "asn_blocked", async: false },
             { fn: () => EntityBotCheck(shortlink, visitorIp, req.headers), reason: "bot_detected", async: true }
         ];
 
         for (const check of checks) {
-            const result = check.async ? await check.fn() : check.fn();
+            let result;
+            try {
+                result = check.async ? await check.fn() : check.fn();
+            } catch (err) {
+                console.error(`Check failed (${check.reason}):`, err);
+                result = null;
+            }
+
             if (result) {
                 const isBypass = result?.bypass || false;
 
                 return NextResponse.json({
-                    success: isBypass,
-                    blocked: !isBypass,
-                    reason: check.reason,
-                    visitorIp,
-                    deviceType,
-                    visitorCountry,
-                    visitorAsn,
+                    Entity: {
+                        info: { success: isBypass, blocked: !isBypass, reason: check.reason },
+                        visitorIp,
+                        visitorIpType,
+                        visitorDevice: deviceType,
+                        visitorCountry,
+                        visitorCountryCode,
+                        location: { region, city, zip, capital, latitude, longitude, phoneNumberCode },
+                        connection,
+                        timezone
+                    },
                     status: isBypass ? 200 : 403,
-                    message: isBypass ? "Visitor bypassed the check (whitelisted)." : "Visitor blocked by ENTITY API.",
+                    message: isBypass ? "whitelisted" : "visitor_blocked"
                 }, { status: isBypass ? 200 : 403 });
             }
         }
 
         return NextResponse.json({
-            success: true,
-            blocked: false,
-            visitorIp,
-            deviceType,
-            visitorCountry,
-            visitorAsn,
-            status: 200,
-            message: "Visitor passed all ENTITY API checks.",
+            Entity: {
+                info: { success: true, blocked: false, message: "visitor_allowed" },
+                visitorIp,
+                visitorIpType,
+                visitorDevice: deviceType,
+                visitorCountry,
+                visitorCountryCode,
+                location: { region, city, zip, capital, latitude, longitude, phoneNumberCode },
+                connection,
+                timezone
+            },
+            status: 200
         }, { status: 200 });
 
     } catch (err) {
+        console.error("Unexpected error:", err);
         return NextResponse.json({
             success: false,
             blocked: true,
             reason: "internal_server_error",
             visitorIp,
-            deviceType: new UAParser(userAgent).getDevice().type || "desktop",
-            visitorCountry: await getCountry(visitorIp),
-            visitorAsn: await getAsn(visitorIp),
+            deviceType,
+            visitorCountry,
+            visitorAsn,
             status: 500,
-            message: err.message || "Internal Server Error",
+            message: err.message || "unexpected_error"
         }, { status: 500 });
     }
 }

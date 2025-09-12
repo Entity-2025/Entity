@@ -30,6 +30,11 @@ import { useRouter } from "next/navigation";
 import { EntityAnimation } from "@/contents/home/animatedLoader";
 import Header from "@/components/ui/header";
 import LiveTest from "@/components/livetest/LiveTest";
+import {
+	EntityCapabilities,
+	EntityLiveTester,
+    Faqs,
+} from "@/components/title/EntityTitle";
 
 export default function HomePageContents() {
 	const router = useRouter();
@@ -102,9 +107,9 @@ export default function HomePageContents() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: false }}
 						transition={{ duration: 0.4 }}
-						className="text-2xl md:text-3xl font-bold mb-6 text-white"
+						className="text-2xl md:text-3xl font-bold mb-10"
 					>
-						Platform Capabilities
+						<EntityCapabilities className="w-42 h-5 sm:w-62 sm:h-7" />
 					</motion.h2>
 
 					<motion.div
@@ -183,9 +188,12 @@ export default function HomePageContents() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: false }}
 						transition={{ duration: 0.4 }}
-						className="text-2xl md:text-3xl font-bold mb-6 text-white"
+						className="text-2xl md:text-3xl font-bold mb-10 "
 					>
-						Live Test
+						<EntityLiveTester
+							className="w-42 h-5 sm:w-62 sm:h-7"
+							color={"stroke-white/90"}
+						/>
 					</motion.h2>
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
@@ -203,9 +211,9 @@ export default function HomePageContents() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: false }}
 						transition={{ duration: 0.4 }}
-						className="text-2xl md:text-3xl font-bold mb-6 text-white"
+						className="text-2xl md:text-3xl font-bold mb-10 text-white"
 					>
-						FAQs
+						<Faqs className="w-42 h-5 sm:w-62 sm:h-7" />
 					</motion.h2>
 
 					<motion.div
