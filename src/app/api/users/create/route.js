@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { ObjectId } from "mongodb";
 
 export async function POST(req) {
     try {
@@ -110,7 +109,8 @@ export async function POST(req) {
             totalShortlinks: 0,
             plan: 'free',
             createdAt: new Date(),
-            expiresAt
+            expiresAt,
+            lastLogin: null
         });
 
         await db.collection("notifications").insertOne({

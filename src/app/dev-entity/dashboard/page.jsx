@@ -234,7 +234,7 @@ export default function EntityDashboard() {
 	return (
 		<div className="p-8 bg-neutral-900/10 min-h-screen">
 			<Card className="rounded-2xl border border-gray-200">
-				<CardHeader className="flex flex-row items-center justify-between">
+				<CardHeader className="grid sm:flex sm:flex-row sm:items-center sm:justify-between">
 					<div className="flex items-center gap-2">
 						<Image
 							src="/entity.svg"
@@ -248,8 +248,8 @@ export default function EntityDashboard() {
 						</CardTitle>
 					</div>
 
-					<div className="flex items-center gap-3">
-						<div className="relative w-64">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-3">
+						<div className="relative sm:w-64">
 							<Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
 							<Input
 								placeholder="Search by username or email..."
@@ -273,8 +273,8 @@ export default function EntityDashboard() {
 					<div className="pb-10">
 						<h1 className="text-xl font-bold mb-4">Karma Control Panel</h1>
 
-						<div className="grid grid-cols-2 gap-2">
-							<div className="flex justify-between items-center bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+						<div className="grid md:grid-cols-2 gap-2">
+							<div className="grid gap-5 sm:flex sm:justify-between sm:items-center bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
 								<div>
 									<p className="font-semibold text-red-800">
 										Delete All Users Notifications
@@ -319,7 +319,7 @@ export default function EntityDashboard() {
 								</Button>
 							</div>
 
-							<div className="flex justify-between items-center bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+							<div className="grid gap-5 sm:flex sm:justify-between sm:items-center bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
 								<div>
 									<p className="font-semibold text-red-800">
 										Delete All stored bot IPs in MongoDB
@@ -364,7 +364,7 @@ export default function EntityDashboard() {
 								</Button>
 							</div>
 
-							<div className="flex justify-between items-center bg-neutral-50 border rounded-xl p-4 shadow-sm">
+							<div className="grid gap-5 sm:flex sm:justify-between sm:items-center bg-neutral-50 border rounded-xl p-4 shadow-sm">
 								<div>
 									<p className="font-semibold text-gray-800">
 										Export stored bot IPs in MongoDB
@@ -445,12 +445,6 @@ export default function EntityDashboard() {
 
 											<div className="grid grid-cols-1 lg:grid-cols-5 gap-2 text-sm text-gray-800">
 												<div>
-													<p className="font-semibold">APIKEY</p>
-													<span className="text-amber-600 font-semibold">
-														{user.apikey || "—"}
-													</span>
-												</div>
-												<div>
 													<p className="font-semibold">
 														SHORTLINK CREATIONS LIMIT
 													</p>
@@ -478,6 +472,20 @@ export default function EntityDashboard() {
 														{user.expiresAt
 															? new Date(user.expiresAt).toLocaleDateString()
 															: "—"}
+													</span>
+												</div>
+												<div>
+													<p className="font-semibold">LAST LOGIN</p>
+													<span className="text-purple-700 font-semibold">
+														{user.lastLogin
+															? new Date(user.lastLogin).toLocaleString()
+															: "—"}
+													</span>
+												</div>
+												<div>
+													<p className="font-semibold">APIKEY</p>
+													<span className="text-amber-600 font-semibold">
+														{user.apikey || "—"}
 													</span>
 												</div>
 											</div>

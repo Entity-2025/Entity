@@ -3,6 +3,7 @@ import clientPromise from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
 import { getIronSession } from "iron-session";
 import { sessionOptions } from "@/lib/entityUserSessions";
+import { ObjectId } from "mongodb";
 
 export async function POST(req) {
     try {
@@ -51,6 +52,11 @@ export async function POST(req) {
             return NextResponse.json({ message: "Invalid credentials!" }, { status: 401 });
         }
 
+        await db.collection("users").updateOne(
+            { _id: new ObjectId(user._id) },
+            { $set: { lastLogin: new Date() } }
+        );
+
         const res = NextResponse.json({
             message: "Login successful!",
             user: {
@@ -61,6 +67,7 @@ export async function POST(req) {
                 shortlinksLimit: user.shortlinksLimit ?? 0,
                 totalShortlinks: user.totalShortlinks ?? 0,
                 plan: user.plan,
+                lastLogin: new Date().toISOString(),
                 createdAt: user.createdAt ? new Date(user.createdAt).toISOString() : null,
             },
         });
