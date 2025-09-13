@@ -28,6 +28,12 @@ const chartConfig = {
 	},
 };
 
+import {
+	Tooltip,
+	TooltipTrigger,
+	TooltipContent,
+} from "@/components/ui/tooltip";
+
 export function ChartData({
 	user,
 	activeChart,
@@ -54,22 +60,32 @@ export function ChartData({
 
 				<div className="flex">
 					{["desktop", "mobile"].map((key) => (
-						<button
-							key={key}
-							data-active={activeChart === key}
-							className={`data-[active=true]:bg-primary data-[active=true]:text-background relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6${
-								key === "mobile" && activeChart === "mobile"
-									? "rounded-none sm:rounded-tr-xl"
-									: ""
-							}`}
-							onClick={() => setActiveChart(key)}
-							disabled={loading}
-						>
-							<span className="text-xs">{chartConfig[key].label}</span>
-							<span className="text-lg leading-none font-bold sm:text-3xl flex h-5 md:h-7 lg:h-8">
-								{total[key].toLocaleString()}
-							</span>
-						</button>
+						<Tooltip key={key}>
+							<TooltipTrigger asChild>
+								<button
+									data-active={activeChart === key}
+									className={`cursor-pointer data-[active=true]:bg-primary data-[active=true]:text-background relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6 ${
+										key === "mobile" && activeChart === "mobile"
+											? "rounded-none sm:rounded-tr-xl"
+											: ""
+									}`}
+									onClick={() => setActiveChart(key)}
+									disabled={loading}
+								>
+									<span className="text-xs">{chartConfig[key].label}</span>
+									<span className="text-lg leading-none font-bold sm:text-3xl flex h-5 md:h-7 lg:h-8">
+										{total[key].toLocaleString()}
+									</span>
+								</button>
+							</TooltipTrigger>
+							<TooltipContent side="top" className="max-w-xs break-words">
+								<p className="text-sm">
+									{key === "desktop"
+										? "Total visits from Desktop devices"
+										: "Total visits from Mobile devices"}
+								</p>
+							</TooltipContent>
+						</Tooltip>
 					))}
 				</div>
 			</CardHeader>

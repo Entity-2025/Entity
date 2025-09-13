@@ -151,7 +151,7 @@ export default function ShortlinksStatisticTab({ user, apikey }) {
 						</SelectTrigger>
 						<SelectContent>
 							{shortlinks.map((link) => (
-								<SelectItem key={link.shortlinkKey} value={link.shortlinkKey}>
+								<SelectItem key={link.shortlinkKey} value={link.shortlinkKey} className={'cursor-pointer'}>
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<p className="flex items-center gap-1 max-w-[200px] sm:max-w-[380px] truncate overflow-hidden whitespace-nowrap text-xs sm:text-sm">

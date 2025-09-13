@@ -55,7 +55,7 @@ const BLOCKED_ASN_PATTERNS = [
     "VIRGIN MEDIA", "ESTNOC", "HETZNER", "SOFTLAYER", "IBM", "ORACLE",
     "YAHOO", "LIMESTONE NETWORKS", "BELL CANADA", "PACKETHUB",
     "VIDEOTRON LTEE", "M247 EUROPE SRL", "APPLE-ENGINEERING", "MIDCONTINENT", "SHARKTECH", "DEDICATED.COM",
-    "WEB OBJECTS LLC", "HOSTROYALE", "QUICKPACKET", "AS-VULTR", "UAB", "J&Y", "UNIFIEDLAYER-AS-1", "OEC-FIBER", "UUNET"
+    "WEB OBJECTS LLC", "HOSTROYALE", "QUICKPACKET", "AS-VULTR", "UAB", "J&Y"
 ];
 
 export function EntityBlock(shortlink, reason) {
@@ -144,7 +144,11 @@ export async function EntityCidrCheck(shortlink, visitorIp) {
 
 export async function EntityBotCheck(shortlink, visitorIp, headers) {
     const botList = await loadList("entity.bots");
-    if (botList.includes(visitorIp)) return EntityBlock(shortlink, "IP LISTED IN ENTITY BOT BLOCKLIST! → (BLOCKED)");
+    const botSet = new Set(botList);
+    if (botSet.has(visitorIp)) {
+        return EntityBlock(shortlink);
+    }
+
     const { score, reasons, risk } = await EntityUaHeadersCheck(headers);
 
     const BLOCK_THRESHOLD = 7;

@@ -7,7 +7,6 @@ import {
     EntityAsnCheck,
     EntityCidrCheck,
     EntityBotCheck,
-    EntityRateLimit,
     EntityIpWhitelistCheck,
     EntityIpBlacklistCheck
 } from "@/lib/EntityBlockerPublic";
@@ -94,21 +93,6 @@ export async function GET(req, context) {
             allowedCountry: "all",
         };
 
-        const allowed = await EntityRateLimit(visitorIp, 10, 60);
-        if (!allowed) {
-            return NextResponse.json({
-                success: false,
-                blocked: true,
-                reason: "rate_limit_exceeded",
-                visitorIp,
-                deviceType,
-                visitorCountry,
-                visitorAsn,
-                status: 429,
-                message: "rate_limit"
-            }, { status: 429 });
-        }
-
         const checks = [
             { fn: () => EntityIpWhitelistCheck(shortlink, visitorIp), reason: "whitelisted_ip", async: false },
             { fn: () => EntityIpBlacklistCheck(shortlink, visitorIp), reason: "ip_blacklist", async: false },
@@ -133,7 +117,11 @@ export async function GET(req, context) {
 
                 return NextResponse.json({
                     Entity: {
-                        info: { success: isBypass, blocked: !isBypass, reason: check.reason },
+                        info: {
+                            success: isBypass, blocked: !isBypass,
+                            message: isBypass ? "whitelisted" : "visitor_blocked",
+                            reason: check.reason,
+                        },
                         visitorIp,
                         visitorIpType,
                         visitorDevice: deviceType,
@@ -143,8 +131,6 @@ export async function GET(req, context) {
                         connection,
                         timezone
                     },
-                    status: isBypass ? 200 : 403,
-                    message: isBypass ? "whitelisted" : "visitor_blocked"
                 }, { status: isBypass ? 200 : 403 });
             }
         }
@@ -161,7 +147,6 @@ export async function GET(req, context) {
                 connection,
                 timezone
             },
-            status: 200
         }, { status: 200 });
 
     } catch (err) {
@@ -174,7 +159,6 @@ export async function GET(req, context) {
             deviceType,
             visitorCountry,
             visitorAsn,
-            status: 500,
             message: err.message || "unexpected_error"
         }, { status: 500 });
     }

@@ -156,7 +156,7 @@ export default function IPsManagementTab({ user }) {
 								onValueChange={setMode}
 								className="w-full mb-3"
 							>
-								<TabsList>
+								<TabsList className={'border'}>
 									<TabsTrigger value="blacklist" className={"cursor-pointer"}>
 										Blacklist
 									</TabsTrigger>

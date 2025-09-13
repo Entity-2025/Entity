@@ -178,9 +178,13 @@ export default function LiveTest() {
 					</div>
 
 					<Tabs defaultValue="configs" className="w-full">
-						<TabsList className="grid w-full grid-cols-2">
-							<TabsTrigger value="configs">Configurations</TabsTrigger>
-							<TabsTrigger value="result">Result</TabsTrigger>
+						<TabsList className="grid w-full grid-cols-2 border">
+							<TabsTrigger value="configs" className={"cursor-pointer"}>
+								Configurations
+							</TabsTrigger>
+							<TabsTrigger value="result" className={"cursor-pointer"}>
+								Result
+							</TabsTrigger>
 						</TabsList>
 
 						<TabsContent value="configs" className="space-y-2">
