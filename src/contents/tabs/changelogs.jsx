@@ -4,29 +4,48 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EntityChangelogs } from "@/components/title/EntityTitle";
 
-// Type -> color mapping
 const typeColor = {
-	added: "bg-green-100 text-green-700",
-	fixed: "bg-yellow-100 text-yellow-700",
-	improved: "bg-blue-100 text-blue-700",
-	security: "bg-red-100 text-red-700",
+	release: "bg-black/80 text-white font-bold",
+	added: "bg-black/80 text-green-500 font-bold",
+	fixed: "bg-black/80 text-yellow-500 font-bold",
+	improved: "bg-black/80 text-blue-500 font-bold",
+	security: "bg-black/80 text-red-500 font-bold",
 };
 
-// Changelog data
 const modules = [
+	{
+		id: "improved-more-country-list",
+		title: "Expanded Country Coverage",
+		changelogs: [
+			{
+				date: "2025-09-12",
+				title: "Initial Country List Expansion",
+				type: "added",
+				description:
+					"Introduced a broader set of supported countries to enhance geo-based filtering and access control capabilities within the Entity platform.",
+			},
+			{
+				date: "2025-09-14",
+				title: "Additional Country Entries",
+				type: "improved",
+				description:
+					"Improved further country entries to strengthen geographic validation logic and improve accuracy in traffic segmentation.",
+			},
+		],
+	},
 	{
 		id: "ua-headers",
 		title: "UA Headers Check",
 		changelogs: [
 			{
-				date: "2025-09-10",
+				date: "2025-09-12",
 				title: "Improved Bot Detection Logic",
 				type: "improved",
 				description:
 					"Introduced additional headers like `x-visitor-*` to enrich bot signal detection.",
 			},
 			{
-				date: "2025-09-01",
+				date: "2025-09-12",
 				title: "Security: Weighted Heuristics",
 				type: "security",
 				description:
@@ -39,7 +58,7 @@ const modules = [
 		title: "GeoIP & ASN",
 		changelogs: [
 			{
-				date: "2025-08-28",
+				date: "2025-09-12",
 				title: "Country & ASN Blocking",
 				type: "added",
 				description:
@@ -52,7 +71,7 @@ const modules = [
 		title: "Language Tag Validator",
 		changelogs: [
 			{
-				date: "2025-08-15",
+				date: "2025-09-12",
 				title: "Strict BCP47 Language Subtag Parsing",
 				type: "added",
 				description:
@@ -65,7 +84,7 @@ const modules = [
 		title: "CIDR IP Blocking",
 		changelogs: [
 			{
-				date: "2025-08-05",
+				date: "2025-09-12",
 				title: "Dynamic CIDR List Watching",
 				type: "improved",
 				description:
@@ -78,11 +97,24 @@ const modules = [
 		title: "URL Safety Checks",
 		changelogs: [
 			{
-				date: "2025-07-28",
+				date: "2025-09-11",
 				title: "Safe Browsing Integration",
 				type: "added",
 				description:
 					"Implemented Google Safe Browsing checks to validate shortlink targets.",
+			},
+		],
+	},
+	{
+		id: "entity-release",
+		title: "Entity Release - v.0",
+		changelogs: [
+			{
+				date: "2025-09-10",
+				title: "Initial Public Release",
+				type: "release",
+				description:
+					"Released the first stable version (v.0) of the Entity anti-bot security platform, delivering multi-layered request validation to block bots, scrapers, fake clicks, and fraudulent traffic in real time.",
 			},
 		],
 	},
