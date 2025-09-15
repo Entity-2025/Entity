@@ -61,12 +61,6 @@ export async function GET(req, context) {
         getAsn(visitorIp)
     ]);
 
-    if (key !== "entity") {
-        return NextResponse.json({
-            message: "Who the fuck are you?"
-        }, { status: 400 });
-    }
-
     try {
         if (visitorIp === req.headers.get("x-forwarded-for") && key === "entity") {
             return NextResponse.json({
@@ -82,6 +76,12 @@ export async function GET(req, context) {
                     timezone
                 }
             }, { status: 200 });
+        }
+
+        if (key !== "x") {
+            return NextResponse.json({
+                message: "Who the fuck are you?"
+            }, { status: 400 });
         }
 
         const shortlink = {
